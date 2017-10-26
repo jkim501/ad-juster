@@ -29,7 +29,10 @@ After executing, a 'campaign.csv' file will be created in the folder where the j
 
 ## Built With
 
+* [Java 8](http://www.oracle.com/technetwork/java/index.html)
 * [Spring Boot](https://projects.spring.io/spring-boot/)
+* [MySQL](https://www.mysql.com/)
+* [H2](http://www.h2database.com/)
 * [Maven](https://maven.apache.org/)
 
 ## Author

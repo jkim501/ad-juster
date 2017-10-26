@@ -60,13 +60,11 @@ public class Application {
 		for(com.adjuster.service.entity.Campaign campaign : campaignEntities) {
 			campaignRepo.save(campaign);
 		}
-		
-		for(com.adjuster.service.entity.Campaign campaign : campaignRepo.findAll()) {
-			log.info(campaign.toString());
-		}
 	}
 	
 	private void problem3(CampaignRepository campaignRepo) throws FileNotFoundException {
+		//it is much more efficient to let the database grab the data we need.
+		//So this query will grab the data as we need it so I don't have to programmatically parse the data
 		List<Object[]> objects = campaignRepo.findAllWithCreatives();
 		
 		if(objects != null)

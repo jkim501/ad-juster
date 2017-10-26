@@ -63,8 +63,8 @@ public class Application {
 	}
 	
 	private void problem3(CampaignRepository campaignRepo) throws FileNotFoundException {
-		//it is much more efficient to let the database grab the data we need.
-		//So this query will grab the data as we need it so I don't have to programmatically parse the data
+		//I'm letting the database do most of the heavy lifting by grabbing exactly the data we need
+		//so I don't have to programmatically parse and massage the results after
 		List<Object[]> objects = campaignRepo.findAllWithCreatives();
 		
 		if(objects != null)

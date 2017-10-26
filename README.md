@@ -30,7 +30,7 @@ After executing, a 'campaign.csv' file will be created in the folder where the j
 ## Built With
 
 * [Spring Boot](https://projects.spring.io/spring-boot/)
-* [Maven](https://maven.apache.org/) - Dependency Management
+* [Maven](https://maven.apache.org/)
 
 ## Author
 

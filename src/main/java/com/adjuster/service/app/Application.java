@@ -23,9 +23,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.client.RestTemplate;
 
-import com.adjuster.service.json.Campaign;
-import com.adjuster.service.json.Creative;
+import com.adjuster.service.dto.CampaignDTO;
+import com.adjuster.service.dto.CreativeDTO;
+import com.adjuster.service.entity.Campaign;
+import com.adjuster.service.entity.Creative;
 import com.adjuster.service.repository.CampaignRepository;
+import com.mysql.jdbc.StringUtils;
 
 @SpringBootApplication
 @EntityScan("com.adjuster.service.entity")
@@ -52,12 +55,12 @@ public class Application {
 	}
 
 	private void problem1(CampaignRepository campaignRepo) throws Exception {
-		Set<Campaign> campaigns = getCampaigns();
-		Set<Creative> creatives = getCreatives();
+		Set<CampaignDTO> campaigns = getCampaigns();
+		Set<CreativeDTO> creatives = getCreatives();
 		
-		Set<com.adjuster.service.entity.Campaign> campaignEntities = parseDataToEntities(campaigns, creatives);
+		Set<Campaign> campaignEntities = parseDataToEntities(campaigns, creatives);
 		
-		for(com.adjuster.service.entity.Campaign campaign : campaignEntities) {
+		for(Campaign campaign : campaignEntities) {
 			campaignRepo.save(campaign);
 		}
 	}
@@ -71,58 +74,57 @@ public class Application {
 			createCSVFile(objects);
 	}
 	
-	private Set<Campaign> getCampaigns() throws Exception {
+	private Set<CampaignDTO> getCampaigns() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		
-		Campaign[] campaigns = restTemplate.getForObject("http://homework.ad-juster.com/api/campaign", Campaign[].class);
+		CampaignDTO[] campaigns = restTemplate.getForObject("http://homework.ad-juster.com/api/campaign", CampaignDTO[].class);
 
 		if (campaigns != null) {
-			return new HashSet<Campaign>(Arrays.asList(campaigns));
+			return new HashSet<CampaignDTO>(Arrays.asList(campaigns));
 		}
 
 		throw new Exception("There were no campaigns to return");
 	}
 
-	private Set<Creative> getCreatives() {
+	private Set<CreativeDTO> getCreatives() {
 		RestTemplate restTemplate = new RestTemplate();
 
-		Creative[] creatives = restTemplate.getForObject("http://homework.ad-juster.com/api/creative", Creative[].class);
+		CreativeDTO[] creatives = restTemplate.getForObject("http://homework.ad-juster.com/api/creative", CreativeDTO[].class);
 
 		if (creatives != null) {
-			return new HashSet<Creative>(Arrays.asList(creatives));
+			return new HashSet<CreativeDTO>(Arrays.asList(creatives));
 		}
 
 		//no exception here campaigns doesn't necessarily have to have creatives unless it's a business requirement?
 		return null;
 	}
 
-	private Set<com.adjuster.service.entity.Campaign> parseDataToEntities(Set<Campaign> campaigns, Set<Creative> creatives) {
-		Map<Long, com.adjuster.service.entity.Campaign> idToCampaignEntity = new HashMap<>();
-		Set<Creative> creativesToDelete = new HashSet<>();
+	protected Set<Campaign> parseDataToEntities(Set<CampaignDTO> campaigns, Set<CreativeDTO> creatives) {
+		Map<Long, Campaign> idToCampaignEntity = new HashMap<>();
+		Set<CreativeDTO> creativesToDelete = new HashSet<>();
 
-		for (Campaign campaign : campaigns) {
+		for (CampaignDTO campaign : campaigns) {
 			if (!idToCampaignEntity.containsKey(campaign.getId())) {
 				idToCampaignEntity.put(campaign.getId(),
-						new com.adjuster.service.entity.Campaign(campaign.getId(), campaign.getStartDate(), campaign.getCpm(), campaign.getName()));
+						new Campaign(campaign.getId(), campaign.getStartDate(), campaign.getCpm(), campaign.getName()));
 			}
-			if(creatives != null) {
-				for (Creative creative : creatives) {
+			if(creatives != null && creatives.size() > 0) {
+				for (CreativeDTO creative : creatives) {
 					if (creative.getParentId() == campaign.getId()) {
 						idToCampaignEntity.get(campaign.getId()).getCreatives()
-								.add(new com.adjuster.service.entity.Creative(creative.getId(), creative.getClicks(), creative.getViews(), idToCampaignEntity.get(campaign.getId())));
+								.add(new Creative(creative.getId(), creative.getClicks(), creative.getViews(), idToCampaignEntity.get(campaign.getId())));
 						creativesToDelete.add(creative);
 					}
 				}
 			}
 
 			// delete added creatives so we don't go through the whole list again
-			for (Creative creative : creativesToDelete) {
+			for (CreativeDTO creative : creativesToDelete) {
 				creatives.remove(creative);
 			}
-
 		}
 		
-		return new TreeSet<com.adjuster.service.entity.Campaign>(idToCampaignEntity.values());
+		return new TreeSet<Campaign>(idToCampaignEntity.values());
 	}
 
 	private void createCSVFile(List<Object[]> objects) throws FileNotFoundException {
@@ -144,10 +146,10 @@ public class Application {
 		sb.append('\n');
 
 		
-		com.adjuster.service.entity.Campaign campaign = null;
+		Campaign campaign = null;
 		
 		for (Object[] object : objects) {
-			campaign = (com.adjuster.service.entity.Campaign) object[0];
+			campaign = (Campaign) object[0];
 			sb.append(campaign.getId());
 			sb.append(',');
 			sb.append(campaign.getName());
@@ -168,7 +170,11 @@ public class Application {
 		pw.close();
 	}
 	
-	private String calculateProfit(String cpm, long views) {
+	protected String calculateProfit(String cpm, long views) {
+		if(StringUtils.isNullOrEmpty(cpm) || views < 0) {
+			return "$0.00";
+		}
+		
 		DecimalFormat df = new DecimalFormat();
 		df.setRoundingMode(RoundingMode.CEILING);	//rounds up the cents
 		df.setMaximumFractionDigits(2);				//only 2 decimal places

@@ -1,9 +1,9 @@
-package com.adjuster.service.json;
+package com.adjuster.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Creative {
+public class CreativeDTO {
 
 	private long id;
 	private long parentId;

@@ -16,7 +16,7 @@ You can execute the test by running the jar in the /target folder
 ```
 java -jar homework-1.0.0.jar
 ```
-This will launch Spring Boot locally and execute the problems.
+This will launch Spring Boot locally and execute the assignment.
 
 I decided to use an in-memory database so it can run stand alone without having to connect to a database.
 

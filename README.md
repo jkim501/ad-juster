@@ -20,11 +20,11 @@ This will launch Spring Boot locally and execute the assignment.
 
 I decided to use an in-memory database so it can run stand alone without having to connect to a database.
 
-If you decide to connect to a database, I left the application.properties I used to connect to my local mysql database.
+If you decide to connect to a database, I also checked in the application.properties I used to connect to my local mysql database.
 
 You can use that as a reference or change it to connect to your own database to push the data in.
 
-After executing, a 'campaign.csv' file should be created in the folder where the jar file was executed.
+After executing, a 'campaign.csv' file will be created in the folder where the jar file was executed.
 
 
 ## Built With

@@ -1,11 +1,11 @@
-package com.adjuster.service.json;
+package com.adjuster.service.dto;
 
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Campaign {
+public class CampaignDTO {
 	private long id;
 	private Date startDate;
 	private String cpm;

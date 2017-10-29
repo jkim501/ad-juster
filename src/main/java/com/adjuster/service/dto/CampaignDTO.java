@@ -1,13 +1,11 @@
 package com.adjuster.service.dto;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CampaignDTO {
 	private long id;
-	private Date startDate;
+	private String startDate;
 	private String cpm;
 	private String name;
 
@@ -19,11 +17,11 @@ public class CampaignDTO {
 		this.id = id;
 	}
 
-	public Date getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
